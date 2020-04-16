@@ -1,5 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,InlineQueryHandler,Dispatcher
-from telegram import InlineQueryResultArticle,InputTextMessageContent,InlineQueryResultLocation,InputLocationMessageContent, Bot, Update
+from telegram import InlineQueryResultArticle,InputTextMessageContent,InlineQueryResultLocation,InputLocationMessageContent
 import logging
 from masks.usersdata import Users
 from masks.masks import MASKS
@@ -17,14 +17,14 @@ TOKEN = config['TELEGRAM']['token']
 PORT=int(os.environ.get('PORT','8443'))
 
 app=Flask(__name__)
-bot=Bot(token=TOKEN)
+#bot=Bot(token=TOKEN)
 
-@app.route('/hook', methods=['POST'])
-def webhook_handler(): #test
-    print ('webhook_handler called')
-    if request.method=='POST':
-        update1=Update.de_json(request.get_json(force=True),bot)
-        dispatcher.process_update(update1)
+#@app.route('/hook', methods=['POST'])
+#def webhook_handler(): #test
+#    print ('webhook_handler called')
+#    if request.method=='POST':
+#        update1=Update.de_json(request.get_json(force=True),bot)
+#        dispatcher.process_update(update1)
 
 def hello(bot, update):
     print (type(bot), type(update))
