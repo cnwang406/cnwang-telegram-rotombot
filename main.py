@@ -1,7 +1,7 @@
-from telegram import InlineQueryResultArticle,InputTextMessageContent,InlineQueryResultLocation,InputLocationMessageContent,Bot,Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,InlineQueryHandler,Dispatcher
 import logging
 from masks.usersdata import Users
+from telegram import InlineQueryResultArticle,InputTextMessageContent,InlineQueryResultLocation,InputLocationMessageContent,Bot,Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,InlineQueryHandler,Dispatcher
 from masks.masks import MASKS
 from uuid import uuid4,uuid1
 from flask import Flask, request
