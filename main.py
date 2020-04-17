@@ -161,7 +161,7 @@ logger.setLevel(logging.DEBUG)
 TOKEN = config['TELEGRAM']['token']
 updater = Updater(token=TOKEN, use_context=True)
 #mode = os.getenv('MODE')
-mode = 'prod'
+mode = 'heroku'
 print (f'mode={mode}')
 if  mode=='prod':
     logger.info('prod mode')
@@ -171,12 +171,13 @@ if  mode=='prod':
         updater.start_webhook(listen='0.0.0.0', port=PORT,url_path=TOKEN)
         updater.bot.set_webhook('https://shrouded-temple-03032.herokuapp.com/'+TOKEN)
         updater.idle()
-else:
-    mode = 'dev'
+elif mode == 'dev':
     logger.info('dev mode')
     def run(updater):
         print ('running dev')
         updater.start_polling()
+else:
+    logger.info('running heroku')
 
 
 #dispatcher = updater.dispatcher
