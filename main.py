@@ -160,7 +160,8 @@ logger=logging.getLogger('rotom406')
 logger.setLevel(logging.DEBUG)
 TOKEN = config['TELEGRAM']['token']
 updater = Updater(token=TOKEN, use_context=True)
-mode = os.getenv('MODE')
+#mode = os.getenv('MODE')
+mode = 'prod'
 print (f'mode={mode}')
 if  mode=='prod':
     logger.info('prod mode')
