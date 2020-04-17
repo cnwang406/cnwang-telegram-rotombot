@@ -68,7 +68,7 @@ def queryMask(bot,update):
     pass
 
 def msgHandler(bot, update):
-    txt = f'I got a photo from {'
+    txt = 'I got a photo '
     bot.send_message(chat_id=update.effective_chat.id, text=txt)
 
 def getLocation(bot, update):
