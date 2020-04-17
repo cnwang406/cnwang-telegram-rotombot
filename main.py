@@ -1,5 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,InlineQueryHandler,Dispatcher
-from telegram import InlineQueryResultArticle,InputTextMessageContent,InlineQueryResultLocation,InputLocationMessageContent
+from telegram import InlineQueryResultArticle,InputTextMessageContent,InlineQueryResultLocation,InputLocationMessageContent,Bot,Update
 import logging
 from masks.usersdata import Users
 from masks.masks import MASKS
@@ -7,35 +7,32 @@ from uuid import uuid4,uuid1
 from flask import Flask, request
 import configparser
 import os
+import sys
 
 VERSION = 0.1
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-TOKEN = config['TELEGRAM']['token']
-PORT=int(os.environ.get('PORT','8443'))
 
 app=Flask(__name__)
-#bot=Bot(token=TOKEN)
 
-#@app.route('/hook', methods=['POST'])
-#def webhook_handler(): #test
-#    print ('webhook_handler called')
-#    if request.method=='POST':
-#        update1=Update.de_json(request.get_json(force=True),bot)
-#        dispatcher.process_update(update1)
-
+@app.route('/hook', methods=['POST'])
+def hook():
+    print ('called hook')
+    if request.method == "POST":
+        update = Update.de_json(request.get_json(force=True), bot)
+        dispatcher.process_update(update)
+    return 'ok'
 def hello(bot, update):
-    print (type(bot), type(update))
-    update.message.reply_text(
-        f'hello, {update.message.from_user.first_name}')
+    txt=f'hello, {update.message.from_user.first_name}'
+    update.message.reply_text(txt)
+        
+    bot.send_message(chat_id=update.effective_chat.id, text=txt)
 
-def start(update, context):
-    print (type(update))
-    print (type(context))
-    context.bot.send_message(chat_id=update.effective_chat.id, text='I\'m bot')
-def help(update, context):
+def start(bot, update):
+    bot.send_message(chat_id=update.effective_chat.id, text='I\'m bot')
+def help(bot,update):
     txt=f'''
     ------------------------------------
     Masks finder   by cnwang.{VERSION}
@@ -47,12 +44,13 @@ def help(update, context):
     this inline bot need ur location
     -----------------------------------
     '''
-    context.bot.send_message(chat_id=update.effective_chat.id, text=txt)
+    bot.send_message(chat_id=update.effective_chat.id, text=txt)
 
-def dumpUser(update,context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=allUsers.dumps())
+def dumpUser(bot,update):
 
-def queryMask(update, context):
+    bot.send_message(chat_id=update.effective_chat.id, text=allUsers.dumps())
+
+def queryMask(bot,update):
     msg=update.message
 
     if allUsers.checkUser(msg.chat.username):
@@ -63,24 +61,18 @@ def queryMask(update, context):
             masks.filterOut()
             txt=masks.filteredS()
             print (txt)
-            context.bot.send_message(chat_id=update.effective_chat.id, text=txt)
+            bot.send_message(chat_id=update.effective_chat.id, text=txt)
 
     else :
         txt='you need to provide location.'
-        context.bot.send_message(chat_id=update.effective_chat.id, text=txt)
+        bot.send_message(chat_id=update.effective_chat.id, text=txt)
     pass
-def echo(update, context):
-    print('called echo')
-    msg = update.message
-    #txt = f'{msg.text} --> {update},// {context}'
-    #context.bot.send_message(chat_id=update.effective_chat.id, text=txt)
-    txt2= f'I got message from {msg.chat.username}'
-    context.bot.send_message(chat_id=885644313, text=txt2)
-def msgHandler(update, context):
-    txt = f'I got a photo --> {update}'
-    context.bot.send_message(chat_id=update.effective_chat.id, text=txt)
 
-def getLocation(update, context):
+def msgHandler(bot, update):
+    txt = f'I got a photo --> {update}'
+    bot.send_message(chat_id=update.effective_chat.id, text=txt)
+
+def getLocation(bot, update):
     if update.edited_message:
         msg=update.edited_message
         edited=True
@@ -90,16 +82,16 @@ def getLocation(update, context):
     txt=f'I got location from {msg.chat.username},(edit={edited}) ->{msg.location}'
     tmp={'name':msg.chat.username, 'loc':[msg.location['longitude'],msg.location['latitude']]}
     allUsers.addModUserLoc(tmp)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=txt)
+    bot.send_message(chat_id=update.effective_chat.id, text=txt)
 
-def inlinequery(update, context):
+def inlinequery(bot, update):
     query=update.inline_query.query.split(' ')
     #if (update.inline_query.hasOwnProperty('location')):
     #    loc=update.inline_query.location
     #else:
     #    loc={'longitude':120.997655,'latitude':24.776416}
     loc=update.inline_query.location
-#    print(update.inline_query, type(update.inline_query),loc)
+    #    print(update.inline_query, type(update.inline_query),loc)
     if loc is None:
         loc={'longitude':120.997655,'latitude':24.776416}
        
@@ -149,13 +141,13 @@ def inlinequery(update, context):
 
                 results.append(result)
         update.inline_query.answer(results)
-        #logging.info('----')
-        #logging.info(results)
-def error(update, context):
+    
+def error(bot, update):
     """Log Errors caused by Updates."""
-
-    logging.warning('Update "%s" caused error "%s"', update, context.error)
-
+    logging.error('Update "%s" caused error "%s"', update, bot.error)
+    
+def echo(bot, update):
+    update.message.reply_text(update.message.text)
 allUsers=Users()
 masks=MASKS(home=[120.997655, 24.776416])
 #location_handler = MessageHandler(Filters.location, location)
@@ -164,10 +156,32 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                      level=logging.INFO)
 
 
+TOKEN = config['TELEGRAM']['token']
 updater = Updater(token=TOKEN, use_context=True)
+mode = os.getenv('MODE')
+print (f'mode={mode}')
+if  mode=='prod':
+    logging.info('prod mode')
+    def run(updater):
+        print ('running prod')
+        PORT=int(os.environ.get('PORT','5000'))        
+        updater.start_webhook(listen='0.0.0.0', port=PORT,url_path=TOKEN)
+        updater.bot.set_webhook('https://shrouded-temple-03032.herokuapp.com/'+TOKEN)
+        updater.idle()
+else:
+    mode = 'dev'
+    logging.info('dev mode')
+    def run(updater):
+        print ('running dev')
+        updater.start_polling()
+
+        
 
 
-dispatcher = updater.dispatcher
+
+#dispatcher = updater.dispatcher
+bot = Bot(TOKEN)
+dispatcher = Dispatcher(bot, None)
 
 dispatcher.add_handler(CommandHandler('hello', hello))
 dispatcher.add_handler(CommandHandler('start', start))
@@ -181,9 +195,10 @@ dispatcher.add_handler(InlineQueryHandler(inlinequery))
 dispatcher.add_error_handler(error)
 
 #updater.start_polling()
-updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
-updater.bot.set_webhook('https://shrouded-temple-03032.herokuapp.com/'+TOKEN)
-updater.idle()
-
+#updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
+#updater.bot.set_webhook('https://shrouded-temple-03032.herokuapp.com/'+TOKEN)
+#updater.idle()
+#run(updater)
 if __name__ == "__main__":
     app.run(debug=True)
+#https://api.telegram.org/bot1151488827:AAEc7NUKdKb19yuJY4xW27UVzdu54TFEcoU/setWebhook?url=https://65437aed.ngrok.io/hook
