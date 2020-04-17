@@ -14,7 +14,6 @@ VERSION = 0.1
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-
 app=Flask(__name__)
 
 @app.route('/hook', methods=['POST'])
@@ -69,7 +68,7 @@ def queryMask(bot,update):
     pass
 
 def msgHandler(bot, update):
-    txt = f'I got a photo --> {update}'
+    txt = f'I got a photo from {'
     bot.send_message(chat_id=update.effective_chat.id, text=txt)
 
 def getLocation(bot, update):
@@ -82,7 +81,8 @@ def getLocation(bot, update):
     txt=f'I got location from {msg.chat.username},(edit={edited}) ->{msg.location}'
     tmp={'name':msg.chat.username, 'loc':[msg.location['longitude'],msg.location['latitude']]}
     allUsers.addModUserLoc(tmp)
-    bot.send_message(chat_id=update.effective_chat.id, text=txt)
+    #bot.send_message(chat_id=update.effective_chat.id, text=txt)
+    logger.debug(txt)
 
 def inlinequery(bot, update):
     query=update.inline_query.query.split(' ')
@@ -95,7 +95,7 @@ def inlinequery(bot, update):
     if loc is None:
         loc={'longitude':120.997655,'latitude':24.776416}
        
-    logging.info(f'location is {loc}')
+    logger.info(f'location is {loc}')
        
     #loc = update.inline_query.location
     masks.setHome([loc['longitude'],loc['latitude']])
@@ -135,33 +135,35 @@ def inlinequery(bot, update):
                     #title=str(idx),
                     latitude=float(hit['geometry'][1]),longitude=float(hit['geometry'][0]),
                     input_message_content=InputTextMessageContent(masks.recordn2Str(idx)+'\n'+mapurl),thumb_width=120,thumb_height=120
-                
                     #input_message_content=InputLocationMessageContent(latitude=hit['geometry'][1],longitude=hit['geometry'][0], live_period=3600)
                     )
-
+                logger.debug(f'{result.latitude},{result.input_message_content}')
                 results.append(result)
         update.inline_query.answer(results)
     
 def error(bot, update):
     """Log Errors caused by Updates."""
-    logging.error('Update "%s" caused error "%s"', update, bot.error)
+    logger.error('Update "%s" caused error "%s"', update, bot.error)
     
 def echo(bot, update):
-    update.message.reply_text(update.message.text)
+    txt=update.message.text 
+    if txt[0]!='💊':
+        update.message.reply_text(update.message.text)
+
 allUsers=Users()
 masks=MASKS(home=[120.997655, 24.776416])
 #location_handler = MessageHandler(Filters.location, location)
 #dispatcher.add_handler(location_handler)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
-
-
+logger=logging.getLogger('rotom406')
+logger.setLevel(logging.DEBUG)
 TOKEN = config['TELEGRAM']['token']
 updater = Updater(token=TOKEN, use_context=True)
 mode = os.getenv('MODE')
 print (f'mode={mode}')
 if  mode=='prod':
-    logging.info('prod mode')
+    logger.info('prod mode')
     def run(updater):
         print ('running prod')
         PORT=int(os.environ.get('PORT','5000'))        
@@ -170,13 +172,10 @@ if  mode=='prod':
         updater.idle()
 else:
     mode = 'dev'
-    logging.info('dev mode')
+    logger.info('dev mode')
     def run(updater):
         print ('running dev')
         updater.start_polling()
-
-        
-
 
 
 #dispatcher = updater.dispatcher
@@ -194,11 +193,6 @@ dispatcher.add_handler(MessageHandler(Filters.text, echo))
 dispatcher.add_handler(InlineQueryHandler(inlinequery))
 dispatcher.add_error_handler(error)
 
-#updater.start_polling()
-#updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
-#updater.bot.set_webhook('https://shrouded-temple-03032.herokuapp.com/'+TOKEN)
-#updater.idle()
-#run(updater)
 if __name__ == "__main__":
     app.run(debug=True)
 #https://api.telegram.org/bot1151488827:AAEc7NUKdKb19yuJY4xW27UVzdu54TFEcoU/setWebhook?url=https://65437aed.ngrok.io/hook
