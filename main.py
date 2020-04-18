@@ -23,13 +23,6 @@ def hook():
         update = Update.de_json(request.get_json(force=True), bot)
         dispatcher.process_update(update)
     return 'ok'
-@app.route('/', methods=['POST'])
-def hook2():
-    print ('called hook/ ')
-    if request.method == "POST":
-        update = Update.de_json(request.get_json(force=True), bot)
-        dispatcher.process_update(update)
-    return 'ok'
 
 def hello(bot, update):
     txt=f'hello, {update.message.from_user.first_name}'
@@ -154,6 +147,7 @@ def error(bot, update):
     logger.error('Update "%s" caused error "%s"', update, bot.error)
     
 def echo(bot, update):
+    print ('echo called')
     txt=update.message.text 
     if txt[0]!='💊':
         update.message.reply_text(update.message.text)
