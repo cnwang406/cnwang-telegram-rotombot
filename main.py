@@ -179,7 +179,7 @@ dispatcher.add_handler(MessageHandler(Filters.photo & (~Filters.forwarded),msgHa
 dispatcher.add_handler(MessageHandler(Filters.text, echo))
 dispatcher.add_handler(InlineQueryHandler(inlinequery))
 dispatcher.add_error_handler(error)
-mode = 'heroku'
+mode = 'dev'
 print (f'mode={mode}')
 if  mode=='prod':
     logger.info('prod mode')
@@ -202,6 +202,7 @@ else:
     updater.idle()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    PORT=int(os.environ.get('PORT','8443'))
+    app.run(debug=True,port=PORT,host='0.0.0.0')
 #https://api.telegram.org/bot1151488827:AAEc7NUKdKb19yuJY4xW27UVzdu54TFEcoU/setWebhook?url=https://65437aed.ngrok.io/hook
 #https://api.telegram.org/bot1151488827:AAEc7NUKdKb19yuJY4xW27UVzdu54TFEcoU/setWebhook?url=https://shrouded-temple-03032.herokuapp.com/hook
