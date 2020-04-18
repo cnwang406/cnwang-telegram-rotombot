@@ -178,6 +178,10 @@ elif mode == 'dev':
         updater.start_polling()
 else:
     logger.info('running heroku')
+    PORT=int(os.environ.get('PORT','5000'))
+    updater.start_webhook(list='0.0.0.0', port=PORT, url_path=TOKEN)
+    updater.bot.set_webhook('https://shrouded-temple-03032.herokuapp.com/'+TOKEN)
+    updater.idle()
 
 
 #dispatcher = updater.dispatcher
