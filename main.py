@@ -163,6 +163,22 @@ logger.setLevel(logging.DEBUG)
 TOKEN = config['TELEGRAM']['token']
 updater = Updater(token=TOKEN, use_context=True)
 #mode = os.getenv('MODE')
+
+
+#dispatcher = updater.dispatcher
+bot = Bot(TOKEN)
+dispatcher = Dispatcher(bot, None)
+
+dispatcher.add_handler(CommandHandler('hello', hello))
+dispatcher.add_handler(CommandHandler('start', start))
+dispatcher.add_handler(CommandHandler('dump', dumpUser))
+dispatcher.add_handler(CommandHandler('mask', queryMask))
+dispatcher.add_handler(CommandHandler('help', help))
+dispatcher.add_handler(MessageHandler(Filters.location,getLocation))
+dispatcher.add_handler(MessageHandler(Filters.photo & (~Filters.forwarded),msgHandler))
+dispatcher.add_handler(MessageHandler(Filters.text, echo))
+dispatcher.add_handler(InlineQueryHandler(inlinequery))
+dispatcher.add_error_handler(error)
 mode = 'heroku'
 print (f'mode={mode}')
 if  mode=='prod':
@@ -184,22 +200,6 @@ else:
     updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
     updater.bot.set_webhook('https://shrouded-temple-03032.herokuapp.com/'+TOKEN)
     updater.idle()
-
-
-#dispatcher = updater.dispatcher
-bot = Bot(TOKEN)
-dispatcher = Dispatcher(bot, None)
-
-dispatcher.add_handler(CommandHandler('hello', hello))
-dispatcher.add_handler(CommandHandler('start', start))
-dispatcher.add_handler(CommandHandler('dump', dumpUser))
-dispatcher.add_handler(CommandHandler('mask', queryMask))
-dispatcher.add_handler(CommandHandler('help', help))
-dispatcher.add_handler(MessageHandler(Filters.location,getLocation))
-dispatcher.add_handler(MessageHandler(Filters.photo & (~Filters.forwarded),msgHandler))
-dispatcher.add_handler(MessageHandler(Filters.text, echo))
-dispatcher.add_handler(InlineQueryHandler(inlinequery))
-dispatcher.add_error_handler(error)
 
 if __name__ == "__main__":
     app.run(debug=True)
