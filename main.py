@@ -157,8 +157,9 @@ def inlinequery(bot, update):
             input_message_content=InputTextMessageContent(message_text=f"""
             Mask Query by cnwang. Ver {VERSION}
             usage :
-            @rotom406_bot child/adult/distance/maxcount
+            @rotom406_bot child/adult/distance/maxcount [key]
                 find at least maxcount pharmacies which child and adult mask quanties within distance (km)
+                key is in (c,child, a,adult,d,distance... 大小寫是順序. 內定是distance')
             """
             ))
         
