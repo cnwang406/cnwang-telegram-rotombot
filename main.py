@@ -82,12 +82,13 @@ def getLocation(bot, update):
         edited=False
     txt=f'I got location from {msg.chat.username},(edit={edited}) ->{msg.location}'
     tmp={'name':msg.chat.username, 'loc':[msg.location['longitude'],msg.location['latitude']]}
-    allUsers.addModUserLoc(tmp)
+    allUsers.addModUserLoc(tmp, msg.chat.id)
     #bot.send_message(chat_id=update.effective_chat.id, text=txt)
     logger.debug(txt)
 
 def inlinequery(bot, update):
     query=update.inline_query.query.split(' ')
+    name = update.inline_query.from_user.username
     #if (update.inline_query.hasOwnProperty('location')):
     #    loc=update.inline_query.location
     #else:
@@ -97,7 +98,7 @@ def inlinequery(bot, update):
     if loc is None:
         loc={'longitude':120.997655,'latitude':24.776416}
        
-    logger.info(f'location is {loc}')
+    logger.info(f'{name} \'s location is {loc}')
        
     #loc = update.inline_query.location
     masks.setHome([loc['longitude'],loc['latitude']])
@@ -142,6 +143,7 @@ def inlinequery(bot, update):
                 logger.debug(f'{result.latitude},{result.input_message_content}')
                 results.append(result)
         update.inline_query.answer(results)
+        ret=allUsers.userAccess(name)
     
 def error(bot, update):
     """Log Errors caused by Updates."""

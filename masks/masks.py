@@ -134,11 +134,11 @@ class MASKS():
         if sortKey[0].isupper():
             reverse=True
 
-        if sortKey.lower() in ('d','distance', 'dist'):
+        if sortKey[0].lower() in ('d','distance', 'dist'):
             key='distance'
-        if sortKey.lower() in ('c','child_mask','mask_child','child','childmask'):
+        if sortKey[0].lower() in ('c','child_mask','mask_child','child','childmask'):
             key='mask_child'
-        if sortKey.lower() in ('a','adult_mask','mask_adult','adult','adultmask'):
+        if sortKey[0].lower() in ('a','adult_mask','mask_adult','adult','adultmask'):
             key='mask_adult'
         print (f'sorting = {key}, reverse={reverse}')        
         self.filteredPharmacies = sorted(self.filteredPharmacies, key=lambda i: (i[key]),reverse=reverse)
