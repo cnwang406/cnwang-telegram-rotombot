@@ -10,7 +10,7 @@ import os
 import sys
 
 APPNAME = 'cnwang-telegram-rotombot'  # for heroku hosting
-VERSION = 0.1
+VERSION = 0.5
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -88,21 +88,29 @@ def getLocation(bot, update):
 
 def inlinequery(bot, update):
     query=update.inline_query.query.split(' ')
+    if query[0].lower() in ('help','h'):
+        result= input_message_content=InlineQueryResultArticle(id=uuid4(),title='HELP',
+            input_message_content=InputTextMessageContent(message_text=f"""
+            Mask Query by cnwang. Ver {VERSION}
+            usage :
+            @rotom406_bot child/adult/distance/maxcount
+                find at least maxcount pharmacies which child and adult mask quanties within distance (km)
+            """
+            ))
+        
+        results=[result]
+        update.inline_query.answer(results)
+        return
     name = update.inline_query.from_user.username
-    #if (update.inline_query.hasOwnProperty('location')):
-    #    loc=update.inline_query.location
-    #else:
-    #    loc={'longitude':120.997655,'latitude':24.776416}
+    
     loc=update.inline_query.location
-    #    print(update.inline_query, type(update.inline_query),loc)
+    
     if loc is None:
         loc={'longitude':120.997655,'latitude':24.776416}
        
-    logger.info(f'{name} \'s location is {loc}')
-       
-    #loc = update.inline_query.location
-    masks.setHome([loc['longitude'],loc['latitude']])
+    #logger.info(f'{name} \'s location is {loc}')   
 
+    masks.setHome([loc['longitude'],loc['latitude']])
     
     if len(query)==1:
         sortKey='distance'
@@ -144,7 +152,20 @@ def inlinequery(bot, update):
                 results.append(result)
         update.inline_query.answer(results)
         ret=allUsers.userAccess(name)
-    
+    else:
+        result= input_message_content=InlineQueryResultArticle(id=uuid4(),title='兒童/成人/距離/顯示數量',
+            input_message_content=InputTextMessageContent(message_text=f"""
+            Mask Query by cnwang. Ver {VERSION}
+            usage :
+            @rotom406_bot child/adult/distance/maxcount
+                find at least maxcount pharmacies which child and adult mask quanties within distance (km)
+            """
+            ))
+        
+        results=[result]
+        update.inline_query.answer(results)
+        return
+
 def error(bot, update):
     """Log Errors caused by Updates."""
     logger.error('Update "%s" caused error "%s"', update, bot.error)
