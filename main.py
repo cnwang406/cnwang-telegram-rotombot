@@ -204,30 +204,10 @@ dispatcher.add_handler(MessageHandler(Filters.photo & (~Filters.forwarded),msgHa
 dispatcher.add_handler(MessageHandler(Filters.text, echo))
 dispatcher.add_handler(InlineQueryHandler(inlinequery))
 dispatcher.add_error_handler(error)
-mode = 'dev'
-print (f'mode={mode}')
-if  mode=='prod':
-    logger.info('prod mode')
-    def run(updater):
-        print ('running prod')
-        PORT=int(os.environ.get('PORT','5000'))        
-        updater.start_webhook(listen='0.0.0.0', port=PORT,url_path=TOKEN)
-        updater.bot.set_webhook(f'https://{APPNAME}.herokuapp.com/'+TOKEN)
-        updater.idle()
-elif mode == 'dev':
-    logger.info('dev mode')
-    def run(updater):
-        print ('running dev')
-        updater.start_polling()
-else:
-    logger.info('running heroku')
-    PORT=int(os.environ.get('PORT','8443'))
-    updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
-    updater.bot.set_webhook(f'https://{APPNAME}.herokuapp.com/'+TOKEN)
-    updater.idle()
+
+logger.info(f'os get TOKEN={os.environ.get("token")}')
+logger.info(f'os get TOKEN={os.environ.get("TOKEN")}')
 
 if __name__ == "__main__":
     PORT=int(os.environ.get('PORT','8443'))
     app.run(debug=True,port=PORT,host='0.0.0.0')
-#https://api.telegram.org/bot1151488827:AAEc7NUKdKb19yuJY4xW27UVzdu54TFEcoU/setWebhook?url=https://65437aed.ngrok.io/hook
-#https://api.telegram.org/bot1151488827:AAEc7NUKdKb19yuJY4xW27UVzdu54TFEcoU/setWebhook?url=https://cnwang-telegram-rotombot.herokuapp.com/hook

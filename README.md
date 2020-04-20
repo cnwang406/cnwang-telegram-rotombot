@@ -1,4 +1,4 @@
-# Rotom - home information HUD
+# Rotom406_bot - telegram bot for search nearest mask pharmacies
 
 ![Platform][platform-image]
 ![Python][python-image]
@@ -9,14 +9,23 @@ telegram chat bot.
 search for masks
 
 datasource is from gov.tw
+wish to filtered out the nearst pharmacies which satisified for at-least certain quantites masks.
 
 ## execute
 
-```sh
-python main.py 
-```
+host on heroku or local by `ngrok http 8443`
+
 ## Usage
 host files at heroku.
+at telergram, use `@rotom406_bot`  to inline query.
+or invite @rotom406_bot to chat.
+
+after push or build, use
+```sh
+ngrok http 8443
+```
+and
+`https://api.telegram.org/bot{TOKEN}/setWebhook?url={URL_to_webhook}/hook`
 
 ## Known Issues
 
@@ -24,6 +33,7 @@ host files at heroku.
 ## Wish list
 -
 ## Release History
+
 
 - 2020.04.18 Ver 0.3
     * host at heroku
