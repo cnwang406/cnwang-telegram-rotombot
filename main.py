@@ -5,15 +5,15 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,Inline
 from masks.masks import MASKS
 from uuid import uuid4,uuid1
 from flask import Flask, request
-import configparser
+#import configparser
 import os
 import sys
 
 APPNAME = 'cnwang-telegram-rotombot'  # for heroku hosting
 VERSION = 0.5
 
-config = configparser.ConfigParser()
-config.read('config.ini')
+#config = configparser.ConfigParser()
+#config.read('config.ini')
 
 app=Flask(__name__)
 
@@ -185,7 +185,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                      level=logging.INFO)
 logger=logging.getLogger('rotom406')
 logger.setLevel(logging.DEBUG)
-TOKEN = config['TELEGRAM']['token']
+TOKEN=os.environ.get("TOKEN")
+
+#TOKEN = config['TELEGRAM']['token']
 updater = Updater(token=TOKEN, use_context=True)
 #mode = os.getenv('MODE')
 
@@ -205,8 +207,7 @@ dispatcher.add_handler(MessageHandler(Filters.text, echo))
 dispatcher.add_handler(InlineQueryHandler(inlinequery))
 dispatcher.add_error_handler(error)
 
-logger.info(f'os get TOKEN={os.environ.get("token")}')
-logger.info(f'os get TOKEN={os.environ.get("TOKEN")}')
+
 
 if __name__ == "__main__":
     PORT=int(os.environ.get('PORT','8443'))
