@@ -34,8 +34,11 @@ and
 -
 ## Release History
 
+- 2020.04.23 Ver 0.6
+    * remove token in database.py
+    * repo to github, and manual deploy to heroku
 
-- 2020.04.18 Ver 0.3
+- 2020.04.18 Ver 0.5
     * host at heroku
 - 2020.04.12 Ver 0.1
     * move to telegram, with chatroom.
@@ -51,7 +54,7 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 
 
 <!-- Markdown link & img dfn's -->
-[npm-image]: https://img.shields.io/badge/version-0.5.0-orange
+[npm-image]: https://img.shields.io/badge/version-0.6.0-orange
 [npm-url]: https://npmjs.org/package/datadog-metrics
 [npm-downloads]: https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square
 [travis-image]: https://img.shields.io/badge/build-working-red

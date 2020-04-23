@@ -10,7 +10,7 @@ import os
 import sys
 
 APPNAME = 'cnwang-telegram-rotombot'  # for heroku hosting
-VERSION = 0.5
+VERSION = 0.6
 
 #config = configparser.ConfigParser()
 #config.read('config.ini')
