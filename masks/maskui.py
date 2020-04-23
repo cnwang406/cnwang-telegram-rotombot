@@ -1,27 +1,14 @@
-from urllib3 import PoolManager,disable_warnings, exceptions
-disable_warnings(exceptions.InsecureRequestWarning)
-import json
-import math
+"""
+for pythonista version on iOS
+"""
 
-import location
-import dialogs
 from time import sleep
-
-class MASKS():
-  def __init__(self, ):
-      
-
-
-  def __repr__(self):
-    class_name = self.__class__.__name__
-    return f'{class_name}({self.a!r})'
-  def __str__(self):
-    return str(self.)
-  @classmethod
-  def get_class_name(cls):
-    return cls.__name__
-
-    
+import dialogs
+import location
+import math
+import json
+from urllib3 import PoolManager, disable_warnings, exceptions
+disable_warnings(exceptions.InsecureRequestWarning)
 
 
 MASK_CHILD_MAX = 500
@@ -46,192 +33,191 @@ source : gov.tw
 
 
 def slider_action(sender):
-	v = sender.superview
+    v = sender.superview
 
-	maskChild = int(v['sChild'].value * MASK_CHILD_MAX)
-	maskAdult = int(v['sAdult'].value * MASK_ADULT_MAX)
-	distance = round(v['sDistance'].value * DISTANCE_MAX, 2)
-	maxCount = int(v['sMaxCount'].value * MAX_COUNT_MAX)
-	#v['txtResult'].text=f'Search {maskChild}/{maskAdult} within {distance}km, search nearest {maxCount} pharmacies'
+    maskChild = int(v['sChild'].value * MASK_CHILD_MAX)
+    maskAdult = int(v['sAdult'].value * MASK_ADULT_MAX)
+    distance = round(v['sDistance'].value * DISTANCE_MAX, 2)
+    maxCount = int(v['sMaxCount'].value * MAX_COUNT_MAX)
+    #v['txtResult'].text=f'Search {maskChild}/{maskAdult} within {distance}km, search nearest {maxCount} pharmacies'
 
-	v['txtChild'].text = str(maskChild)
-	v['txtAdult'].text = str(maskAdult)
-	v['txtDistance'].text = str(distance)
-	v['txtMaxCount'].text = str(maxCount)
+    v['txtChild'].text = str(maskChild)
+    v['txtAdult'].text = str(maskAdult)
+    v['txtDistance'].text = str(distance)
+    v['txtMaxCount'].text = str(maxCount)
 
 
 def getGPS():
-	if location.is_authorized():
-		location.start_updates()
-		sleep(1)
-		loc = location.get_location()
-		dialogs.alert(
-			title='Location updated',
-			message=
-			f'[{loc["longitude"]:.3f},{loc["latitude"]:.3f}]\n or enter manually',
-			button1='Got It',
-			hide_cancel_button=True)
-		return [loc['longitude'], loc['latitude']]
-	else:
-		dialogs.alert(
-			title='Cannot get GPS',
-			message='You have to enable it from setting/privacy or enter manually',
-			button1='Got It',
-			hide_cancel_button=True)
-		return HOMEGPS
+    if location.is_authorized():
+        location.start_updates()
+        sleep(1)
+        loc = location.get_location()
+        dialogs.alert(
+            title='Location updated',
+            message=f'[{loc["longitude"]:.3f},{loc["latitude"]:.3f}]\n or enter manually',
+            button1='Got It',
+            hide_cancel_button=True)
+        return [loc['longitude'], loc['latitude']]
+    else:
+        dialogs.alert(
+            title='Cannot get GPS',
+            message='You have to enable it from setting/privacy or enter manually',
+            button1='Got It',
+            hide_cancel_button=True)
+        return HOMEGPS
 
 
 def btmGetGPS(sender):
-	loc = getGPS()
-	v = sender.superview
-	v['txtHomeLon'].text, v['txtHomeLat'].text = str(loc[0]), str(loc[1])
+    loc = getGPS()
+    v = sender.superview
+    v['txtHomeLon'].text, v['txtHomeLat'].text = str(loc[0]), str(loc[1])
 
 
 def btm_Go(sender):
 
-	v = sender.superview
-	sender.alpha = 0.1
-	if location.is_authorized():
-		location.start_updates()
-		loc = location.get_location()
-		homeGPS = [loc['longitude'], loc['latitude']]
-	else:
-		homeGPS = [float(v['txtHomeLon'].text), float(v['txtHomeLat'].text)]
-	#print(f'\n\nSearch Child:{v["txtChild"].text} Adult:{v["txtAdult"].text} within {v["txtDistance"].text}km, search nearest {v["txtMaxCount"].text} pharmacies from [{homeGPS[0]}, {homeGPS[1]}]')
-	v['txtResult'].text = ''
-	v[
-		'txtResult'].text += f'\n\nSearch Child:{v["txtChild"].text} Adult:{v["txtAdult"].text} within {v["txtDistance"].text}km, search nearest {v["txtMaxCount"].text} pharmacies from [{round(homeGPS[0],3)}, {round(homeGPS[1],3)}]'
-	sleep(1)
-	allData = getPharmaciesData()
+    v = sender.superview
+    sender.alpha = 0.1
+    if location.is_authorized():
+        location.start_updates()
+        loc = location.get_location()
+        homeGPS = [loc['longitude'], loc['latitude']]
+    else:
+        homeGPS = [float(v['txtHomeLon'].text), float(v['txtHomeLat'].text)]
+    #print(f'\n\nSearch Child:{v["txtChild"].text} Adult:{v["txtAdult"].text} within {v["txtDistance"].text}km, search nearest {v["txtMaxCount"].text} pharmacies from [{homeGPS[0]}, {homeGPS[1]}]')
+    v['txtResult'].text = ''
+    v[
+        'txtResult'].text += f'\n\nSearch Child:{v["txtChild"].text} Adult:{v["txtAdult"].text} within {v["txtDistance"].text}km, search nearest {v["txtMaxCount"].text} pharmacies from [{round(homeGPS[0],3)}, {round(homeGPS[1],3)}]'
+    sleep(1)
+    allData = getPharmaciesData()
 
-	hits = filterOut(
-		allData,
-		homeGPS,
-		distance=float(v['txtDistance'].text),
-		mask_child=int(v['txtChild'].text),
-		mask_adult=int(v['txtAdult'].text),
-		maxCount=int(v['txtMaxCount'].text))
+    hits = filterOut(
+        allData,
+        homeGPS,
+        distance=float(v['txtDistance'].text),
+        mask_child=int(v['txtChild'].text),
+        mask_adult=int(v['txtAdult'].text),
+        maxCount=int(v['txtMaxCount'].text))
 
-	v['txtResult'].text += resultText(hits, allData)
-	sleep(1)
-	sender.alpha = 1.0
+    v['txtResult'].text += resultText(hits, allData)
+    sleep(1)
+    sender.alpha = 1.0
 
 
 def getPharmaciesData():
-	pharmaciesUrl = r'https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json'
-	http = PoolManager()
+    pharmaciesUrl = r'https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json'
+    http = PoolManager()
 
-	r = http.request('GET', pharmaciesUrl)
-	pharmaciesData = json.loads(r.data)['features']
+    r = http.request('GET', pharmaciesUrl)
+    pharmaciesData = json.loads(r.data)['features']
 
-	allData = []
-	for phd in pharmaciesData:
-		data = {}
-		geo = phd['geometry']['coordinates']
-		name = phd['properties']['name']
-		address = phd['properties']['address']
-		mask_adult = phd['properties']['mask_adult']
-		mask_child = phd['properties']['mask_child']
-		available = phd['properties']['available']
-		note = phd['properties']['note']
-		data = {
-			'name': name,
-			'address': address,
-			'mask_adult': mask_adult,
-			'mask_child': mask_child,
-			'available': available,
-			'note': note,
-			'geometry': geo
-		}
-		allData.append(data)
-	return allData
+    allData = []
+    for phd in pharmaciesData:
+        data = {}
+        geo = phd['geometry']['coordinates']
+        name = phd['properties']['name']
+        address = phd['properties']['address']
+        mask_adult = phd['properties']['mask_adult']
+        mask_child = phd['properties']['mask_child']
+        available = phd['properties']['available']
+        note = phd['properties']['note']
+        data = {
+            'name': name,
+            'address': address,
+            'mask_adult': mask_adult,
+            'mask_child': mask_child,
+            'available': available,
+            'note': note,
+            'geometry': geo
+        }
+        allData.append(data)
+    return allData
 
 
 def geoDistance(loc1, loc2):
 
-	R = 6373.0
-	#radius of the Earth
+    R = 6373.0
+    # radius of the Earth
 
-	lat1 = math.radians(loc1[1])
-	#coordinates
-	lon1 = math.radians(loc1[0])
-	lat2 = math.radians(loc2[1])
-	lon2 = math.radians(loc2[0])
+    lat1 = math.radians(loc1[1])
+    # coordinates
+    lon1 = math.radians(loc1[0])
+    lat2 = math.radians(loc2[1])
+    lon2 = math.radians(loc2[0])
 
-	dlon = lon2 - lon1
-	#change in coordinates
-	dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    #change in coordinates
+    dlat = lat2 - lat1
 
-	a = math.sin(
-		dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
-	#Haversine formula
-	c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-	distance = R * c
+    a = math.sin(
+        dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    # Haversine formula
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance = R * c
 
-	return distance
+    return distance
 
 
 def calcDistances(loc):
-	for phd in allData:
+    for phd in allData:
 
-		distance = geoDistance(loc, phd['geometry'])
-		print(distance)
+        distance = geoDistance(loc, phd['geometry'])
+        print(distance)
 
 
 def filterOut(allData,
-														loc,
-														distance=3,
-														mask_child=100,
-														mask_adult=200,
-														maxCount=5):
-	hits = []
-	hitsCount = 0
-	for phd in allData:
-		phdDistance = geoDistance(loc, phd['geometry'])
-		if phdDistance <= distance:
-			if (phd['mask_adult'] >= mask_adult and phd['mask_child'] >= mask_child):
-				phd['distance'] = phdDistance
-				hits.append(phd)
-				hitsCount += 1
-				#print (phd)
-			#if hitsCount>=maxCount:
-			#	break
-	hits = sorted(hits, key=lambda i: (i['distance']))
+              loc,
+              distance=3,
+              mask_child=100,
+              mask_adult=200,
+              maxCount=5):
+    hits = []
+    hitsCount = 0
+    for phd in allData:
+        phdDistance = geoDistance(loc, phd['geometry'])
+        if phdDistance <= distance:
+            if (phd['mask_adult'] >= mask_adult and phd['mask_child'] >= mask_child):
+                phd['distance'] = phdDistance
+                hits.append(phd)
+                hitsCount += 1
+                #print (phd)
+            # if hitsCount>=maxCount:
+            #	break
+    hits = sorted(hits, key=lambda i: (i['distance']))
 
-	return hits
+    return hits
 
 
 def resultText(hits, allData):
-	output = ''
-	output += f'\nmeet criteria {len(hits)} out of {len(allData)} pharmacies \n\n'
-	if len(hits) == 0:
-		output += '\n 🈚️🈚️🈚️ NO FOUND 🈚️🈚️🈚️'
-	for hit in hits:
-		if hit["mask_child"] > 200:
-			headings = '‼️'
-		else:
-			headings = ''
-		output += f'{headings}💊{hit["name"]} 童🧒🏻 {numberToEmoji(hit["mask_child"])}/ 大👩🏻 {hit["mask_adult"]} ({hit["distance"]:.2f}km) {headings}\n'
-		output += f'{hit["address"]} {hit["note"]}\n'
-		output += '\n'
-	output += '---[FINISHED]---'
-	return output
+    output = ''
+    output += f'\nmeet criteria {len(hits)} out of {len(allData)} pharmacies \n\n'
+    if len(hits) == 0:
+        output += '\n 🈚️🈚️🈚️ NO FOUND 🈚️🈚️🈚️'
+    for hit in hits:
+        if hit["mask_child"] > 200:
+            headings = '‼️'
+        else:
+            headings = ''
+        output += f'{headings}💊{hit["name"]} 童🧒🏻 {numberToEmoji(hit["mask_child"])}/ 大👩🏻 {hit["mask_adult"]} ({hit["distance"]:.2f}km) {headings}\n'
+        output += f'{hit["address"]} {hit["note"]}\n'
+        output += '\n'
+    output += '---[FINISHED]---'
+    return output
 
 
 def numberToEmoji(n):
-	emojis = [
-		'0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'
-	]
-	ss = str(n)
-	ret = ''
-	for s in ss:
-		ret += emojis[int(s)]
-	return ret
+    emojis = [
+        '0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'
+    ]
+    ss = str(n)
+    ret = ''
+    for s in ss:
+        ret += emojis[int(s)]
+    return ret
 
 
 # pyui
 def uipage():
-	return '''
+    return '''
 [
   {
     "nodes" : [
@@ -585,21 +571,18 @@ def uipage():
 
 if __name__ == '__main__':
 
-	v = ui.load_view_str(uipage())
-	v.name = f'MASK UI V{VERSION}'
-	v.present('uipage')
+    v = ui.load_view_str(uipage())
+    v.name = f'MASK UI V{VERSION}'
+    v.present('uipage')
 
-	if location.is_authorized():
-		location.start_updates()
-		v['btmGPS'].alpha = 1.0
-		sleep(1)
-		btmGetGPS(v['btmGPS'])
+    if location.is_authorized():
+        location.start_updates()
+        v['btmGPS'].alpha = 1.0
+        sleep(1)
+        btmGetGPS(v['btmGPS'])
 
-	else:
-		v['btmGPS'].alpha = 0.2
+    else:
+        v['btmGPS'].alpha = 0.2
 
-	v['txtResult'].text = TITLE
-ext=TITLE
-
-
-
+    v['txtResult'].text = TITLE
+ext = TITLE
