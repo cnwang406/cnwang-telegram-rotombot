@@ -1,7 +1,16 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from masks.usersdata import Users
 
+DB_USER=os.environ.get('DB_USER')
+DB_USERPASSWORD=os.environ.get('DB_PASSWORD')
+DB_DATABASE=os.environ.get('DB_DATABASE')
+DB_HOST=os.environ.get('DB_HOST')
 
-users = Users()
+
+users=Users(database=DB_DATABASE,user=DB_USER,password=DB_USERPASSWORD,host=DB_HOST)
+
 
 print (users.dump())
 a=users.newUser('aaa',111)

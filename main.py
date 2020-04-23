@@ -177,7 +177,13 @@ def echo(bot, update):
     if txt[0]!='💊':
         update.message.reply_text(update.message.text)
 
-allUsers=Users()
+DB_USER=os.environ.get('DB_USER')
+DB_USERPASSWORD=os.environ.get('DB_PASSWORD')
+DB_DATABASE=os.environ.get('DB_DATABASE')
+DB_HOST=os.environ.get('DB_HOST')
+
+
+allUsers=Users(database=DB_DATABASE,user=DB_USER,password=DB_USERPASSWORD,host=DB_HOST)
 masks=MASKS(home=[120.997655, 24.776416])
 #location_handler = MessageHandler(Filters.location, location)
 #dispatcher.add_handler(location_handler)
