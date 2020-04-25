@@ -8,12 +8,13 @@
 telegram chat bot.
 search for masks
 
-datasource is from gov.tw
+datasource is from gov.tw, and reference from https://github.com/kiang/pharmacies
+
 wish to filtered out the nearst pharmacies which satisified for at-least certain quantites masks.
 
 ## execute
 
-host on heroku or local by `ngrok http 8443`
+host on *heroku* or ◊local by `ngrok http 8443`
 
 ## Usage
 host files at heroku.
